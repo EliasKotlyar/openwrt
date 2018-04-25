@@ -4,6 +4,8 @@
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
+# $(call MkImageGzip,$(KDIR)/vmlinux,$(KDIR)/uimage)
+# mkimage -A MIPS -O linux -T firmware -C none -a 0 -e 0 -n jz_fw -d $(1).gz $(2)
 
 JFFS2_BLOCKSIZE=256k 512k
 
@@ -20,13 +22,9 @@ endif
 
 UIMAGE:=$(BIN_DIR)/$(IMG_PREFIX)-uImage.bin
 
-define MkImageGzip
-	gzip -9n -c $(1) > $(1).gz
-	mkimage -A MIPS -O linux -T firmware -C none -a 0 -e 0 -n jz_fw -d -d $(1).gz $(2)
-endef
-
 define Image/Prepare
-	$(call MkImageGzip,$(KDIR)/vmlinux,$(KDIR)/uimage)
+	cat $(KDIR)/vmlinux | $(STAGING_DIR_HOST)/bin/lzma e -si -so -eos -lc1 -lp2 -pb2 > $(KDIR)/vmlinux.lzma
+	mkimage -A mips -O linux -T kernel -a 0x80010000 -C lzma -e 0x80010000 -n 'MIPS OpenWrt Linux-$(LINUX_VERSION)' -d $(KDIR)/vmlinux.lzma $(KDIR)/uimage
 endef
 
 define Image/BuildKernel
