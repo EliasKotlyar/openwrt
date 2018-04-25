@@ -8,9 +8,9 @@ include $(TOPDIR)/rules.mk
 
 ARCH:=mipsel
 BOARD:=xburst
-BOARDNAME:=Ingenic XBurst
+BOARDNAME:=Ingenic
 FEATURES:=targz nand ubifs audio
-SUBTARGETS:=qi_lb60
+SUBTARGETS:=t20
 
 KERNEL_PATCHVER:=3.18
 
